@@ -1,0 +1,22 @@
+Dispensary Desktop for Windows x64
+
+1. Extract the entire ZIP to a permanent folder. Keep Dispensary.exe
+   beside Dispensary.jar. The launcher uses your installed Java 17+.
+2. Stop the old pharmacy app. Double-click Dispensary.exe.
+3. Choose Import existing records and select pharmacy.mv.db from the old
+   app's medicine\data folder. The file picker checks the previous
+   pharmacy-launch and Dispensary locations. Import copies the database.
+   Choose Start empty only if you want a fresh store.
+4. Choose a password, then sign in as pharmacist. The pharmacy opens in
+   its own Edge window. A PC without Edge uses the default browser.
+5. Use Quit Dispensary in the control window when you finish for the day.
+   Closing just the pharmacy window leaves the local service available.
+
+Records live in %LOCALAPPDATA%\DispensaryDesktop\data.
+After quitting, copy the data folder to a separate drive for a backup.
+To restore from backup, quit the app and preserve the current data folder
+before replacing it with your closed-store backup. Keep backups private.
+Check inventory and sales history after import, before entering new sales.
+
+Desktop operation uses a loopback address, local H2 storage and bundled
+UI assets. Email jobs are disabled. Maven is only needed to build the app.
