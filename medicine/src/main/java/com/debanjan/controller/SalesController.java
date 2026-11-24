@@ -1,5 +1,6 @@
 package com.debanjan.controller;
 
+import jakarta.validation.Valid;
 import com.debanjan.model.Sale;
 import com.debanjan.dto.SaleDTO;
 import com.debanjan.service.SalesService;
@@ -31,7 +32,7 @@ public class SalesController {
     private PDFReportGenerator pdfReportGenerator;
 
     @PostMapping
-    public ResponseEntity<Sale> createSale(@RequestBody SaleDTO saleDTO) {
+    public ResponseEntity<Sale> createSale(@Valid @RequestBody SaleDTO saleDTO) {
         return ResponseEntity.ok(salesService.createSale(saleDTO));
     }
 

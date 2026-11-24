@@ -1,5 +1,6 @@
 package com.debanjan.controller;
 
+import jakarta.validation.Valid;
 import com.debanjan.model.Medicine;
 import com.debanjan.service.MedicineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,12 @@ public class MedicineController {
     private MedicineService medicineService;
 
     @PostMapping
-    public ResponseEntity<Medicine> addMedicine(@RequestBody Medicine medicine) {
+    public ResponseEntity<Medicine> addMedicine(@Valid @RequestBody Medicine medicine) {
         return ResponseEntity.ok(medicineService.addMedicine(medicine));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Medicine> updateMedicine(@PathVariable Long id, @RequestBody Medicine medicine) {
+    public ResponseEntity<Medicine> updateMedicine(@PathVariable Long id, @Valid @RequestBody Medicine medicine) {
         Medicine updated = medicineService.updateMedicine(id, medicine);
         if (updated != null) {
             return ResponseEntity.ok(updated);

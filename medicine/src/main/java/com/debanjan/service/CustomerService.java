@@ -5,6 +5,8 @@ import com.debanjan.model.Sale;
 import com.debanjan.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
@@ -30,7 +32,7 @@ public class CustomerService {
 
     public List<Sale> getCustomerPurchaseHistory(Long customerId) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
         return customer.getPurchases();
     }
 }

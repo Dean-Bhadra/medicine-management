@@ -1,5 +1,6 @@
 package com.debanjan.model;
 
+import java.math.BigDecimal;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -23,8 +24,10 @@ public class Sale {
     private String customerPhone;
 
     @Column(nullable = false)
-    private Double totalAmount;
+    private BigDecimal totalAmount;
 
+    @Column(unique = true)
+    private String checkoutKey;
     private String prescriptionNumber;
     private String paymentMethod;
     @ManyToOne
