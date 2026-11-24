@@ -1,0 +1,20 @@
+name: Publish Dispensary desktop v1
+on:
+  push:
+    branches: [publish-desktop-v1]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish verified Windows build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: Dean-Bhadra/medicine-management
+        run: |
+          gh api repos/Dean-Bhadra/medicine-management/actions/artifacts/14879055316/zip > Dispensary-Windows-x64.zip
+          echo '695f16fa32023b30171609aeeb22abf64e542dd2e2e49e70d795a88da9d4dfc7  Dispensary-Windows-x64.zip' | sha256sum -c -
+          unzip -t Dispensary-Windows-x64.zip
+          gh release create desktop-v1.0.0 Dispensary-Windows-x64.zip --target 6de8d57895aba29c6c480f6543ee1f59474b8d2b --title "Dispensary Desktop for Windows" --notes "Extract Dispensary-Windows-x64.zip and open Dispensary.exe. Requires Windows x64 and Java 17 or newer. Close the old app and choose Import existing records to copy your medicines and sales."
