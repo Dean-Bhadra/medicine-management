@@ -2,6 +2,12 @@
 
 Dispensary is a Spring Boot pharmacy retail app for a single store. Staff can receive medicine batches, see which stock needs attention, ring up a sale and reprint the customer's receipt. The browser interface and REST API run in the same application.
 
+## Windows desktop edition
+
+Download the **Dispensary-Windows-x64** artifact from a successful **Windows desktop** GitHub Actions run and extract it. Double-click **Dispensary.exe** with Java 17+ installed. Follow [the first-launch and import instructions](desktop/START-HERE.txt) to bring over an existing local store. The desktop uses a dedicated app window, a private localhost port and a per-user database under `%LOCALAPPDATA%\DispensaryDesktop`. Use **Quit Dispensary** in the control window to shut down the database before backing it up.
+
+The desktop ZIP contains the pharmacy JAR and a small Windows launcher. To build it from source, run the Maven build below and use the Windows desktop workflow in this repository. Regular Spring Boot startup remains available.
+
 ## Run locally
 
 Install a JDK 17 or newer. From the repository root, run:

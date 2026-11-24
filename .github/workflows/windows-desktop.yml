@@ -1,0 +1,46 @@
+name: Windows desktop
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - 'medicine/**'
+      - '.github/workflows/windows-desktop.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - 'medicine/**'
+      - '.github/workflows/windows-desktop.yml'
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: false
+      - name: Build and test the pharmacy application
+        working-directory: medicine
+        run: mvn --batch-mode clean package
+      - name: Package the desktop launcher
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist
+          go build -trimpath -ldflags "-s -w -H=windowsgui" -o dist/Dispensary.exe desktop/launcher_windows.go
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item medicine/target/medicine-*.jar dist/Dispensary.jar
+          Copy-Item desktop/START-HERE.txt dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Dispensary-Windows-x64
+          path: dist/
+          if-no-files-found: error
