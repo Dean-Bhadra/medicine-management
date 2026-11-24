@@ -1,5 +1,6 @@
 package com.debanjan.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import com.debanjan.model.Medicine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -16,8 +17,8 @@ public class NotificationService {
     @Autowired
     private JavaMailSender mailSender;
 
-    @Autowired
-    private MedicineService medicineService;
+    @Value("${ALERT_RECIPIENT:}")
+    private String recipient;
 
     public void sendLowStockAlert(Medicine medicine) {
         String subject = "Low Stock Alert: " + medicine.getName();
@@ -29,7 +30,7 @@ public class NotificationService {
             Please reorder soon.
             """, medicine.getName(), medicine.getStockQuantity());
 
-        sendEmail("pharmacy@example.com", subject, body);
+        sendEmail(recipient, subject, body);
     }
 
     public void sendExpiryAlert(Medicine medicine) {
@@ -42,7 +43,7 @@ public class NotificationService {
             Please check and take necessary action.
             """, medicine.getName(), medicine.getExpiryDate(), medicine.getStockQuantity());
 
-        sendEmail("pharmacy@example.com", subject, body);
+        sendEmail(recipient, subject, body);
     }
 
     private void sendEmail(String to, String subject, String body) {
@@ -51,7 +52,7 @@ public class NotificationService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(body, true);
+            helper.setText(body, false);
             mailSender.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -64,9 +65,9 @@ public class NotificationService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setTo("pharmacy@example.com");
+            helper.setTo(recipient);
             helper.setSubject(subject);
-            helper.setText(body, true);
+            helper.setText(body, false);
             helper.addAttachment("weekly-report.pdf", new ByteArrayResource(pdfReport));
             mailSender.send(message);
         } catch (MessagingException e) {

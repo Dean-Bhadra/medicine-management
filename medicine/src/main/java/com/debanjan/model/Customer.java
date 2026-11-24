@@ -1,5 +1,6 @@
 package com.debanjan.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
@@ -17,5 +18,6 @@ public class Customer {
     private String address;
 
     @OneToMany(mappedBy = "customer")
+    @JsonIgnore
     private List<Sale> purchases;
 }

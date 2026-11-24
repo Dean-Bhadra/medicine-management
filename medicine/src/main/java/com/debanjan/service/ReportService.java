@@ -1,5 +1,7 @@
 package com.debanjan.service;
 
+import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
 import com.debanjan.model.Medicine;
 import com.debanjan.model.Sale;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,10 @@ public class ReportService {
     @Autowired
     private MedicineService medicineService;
 
+    @Transactional(readOnly = true)
     public Map<String, Object> generateSalesReport(LocalDateTime start, LocalDateTime end) {
         List<Sale> sales = salesService.getSalesByDateRange(start, end);
-        Double totalSales = salesService.getTotalSales(start, end);
+        var totalSales = sales.stream().map(Sale::getTotalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         Map<String, Object> report = new HashMap<>();
         report.put("startDate", start);
@@ -29,11 +32,13 @@ public class ReportService {
 
         // Calculate top selling medicines
         Map<Medicine, Integer> medicineQuantities = new HashMap<>();
-        sales.forEach(sale ->
-                sale.getItems().forEach(item ->
-                        medicineQuantities.merge(item.getMedicine(), item.getQuantity(), Integer::sum)
-                )
-        );
+        Map<Medicine, BigDecimal> revenue = new HashMap<>();
+        for (Sale sale : sales) {
+            for (var item : sale.getItems()) {
+                medicineQuantities.merge(item.getMedicine(), item.getQuantity(), Integer::sum);
+                revenue.merge(item.getMedicine(), item.getTotalPrice(), BigDecimal::add);
+            }
+        }
 
         List<Map<String, Object>> topMedicines = medicineQuantities.entrySet().stream()
                 .sorted(Map.Entry.<Medicine, Integer>comparingByValue().reversed())
@@ -42,7 +47,7 @@ public class ReportService {
                     Map<String, Object> medicineData = new HashMap<>();
                     medicineData.put("name", entry.getKey().getName());
                     medicineData.put("quantity", entry.getValue());
-                    medicineData.put("revenue", entry.getValue() * entry.getKey().getUnitPrice());
+                    medicineData.put("revenue", revenue.get(entry.getKey()));
                     return medicineData;
                 })
                 .collect(Collectors.toList());
@@ -60,8 +65,9 @@ public class ReportService {
         Map<String, Object> report = new HashMap<>();
         report.put("totalMedicines", allMedicines.size());
         report.put("totalValue", allMedicines.stream()
-                .mapToDouble(m -> m.getUnitPrice() * m.getStockQuantity())
-                .sum());
+                .filter(m -> m.getStockQuantity() != null)
+                .map(m -> m.getUnitPrice().multiply(BigDecimal.valueOf(m.getStockQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         report.put("lowStockMedicines", lowStockMedicines);
         report.put("expiringMedicines", expiringMedicines);
 

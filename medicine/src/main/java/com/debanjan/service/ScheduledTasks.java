@@ -1,5 +1,7 @@
 package com.debanjan.service;
 
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import com.debanjan.model.Medicine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@EnableScheduling
+@ConditionalOnProperty(name = "pharmacy.alerts.enabled", havingValue = "true")
 public class ScheduledTasks {
 
     @Autowired
